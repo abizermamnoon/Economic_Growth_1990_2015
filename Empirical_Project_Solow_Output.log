@@ -1,0 +1,94 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\abize\OneDrive\Desktop\Econometrics\Empirical_Project\Empirical_Project_Solow_Output.log
+  log type:  text
+ opened on:   5 Dec 2023, 13:02:55
+
+. 
+. clear all               /* Clear memory */
+
+. set more off            /* Uninterrupted Scrolling for Results */
+
+. 
+. * II.A Import Growth Data Dataset
+. *  Command:  
+. use "GrowthData.dta", clear
+
+. 
+. 
+. 
+. /* II.A.2 Fit Solow Growth model using OLS with Robust standard errors:  
+>      lgdp_change = b0 + b1*lcapital_change + b2*llabor_change + u 
+>    Command:  regress {y} {x1} {x2} ... {xk}, robust */
+. regress lgdp_change lcapital_change llabor_change, robust
+
+Linear regression                               Number of obs     =         81
+                                                F(2, 78)          =     174.21
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.8044
+                                                Root MSE          =      .0078
+
+---------------------------------------------------------------------------------
+                |               Robust
+    lgdp_change | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+----------------+----------------------------------------------------------------
+lcapital_change |   .5695205   .0627731     9.07   0.000      .444549    .6944921
+  llabor_change |   .6220971   .0796423     7.81   0.000     .4635414    .7806527
+          _cons |   .0009557   .0018606     0.51   0.609    -.0027484    .0046598
+---------------------------------------------------------------------------------
+
+.    
+. /* II.B.3.a Generate interaction variables between colonial_origin with 
+>         lcapital_change and llabor_change */
+.         
+.  gen col_lcap = colonial_origin*lcapital_change
+(1 missing value generated)
+
+.  gen col_llabor = colonial_origin*llabor_change
+(1 missing value generated)
+
+.  
+. /* II.B.3.b Regress lgdp_change on llabor_change, lcapital_change, 
+>         colonial_origin, and the generated interaction variables using 
+>         Robust standard errors */
+. regress lgdp_change lcapital_change llabor_change colonial_origin col_lcap col_llabor, robust
+
+Linear regression                               Number of obs     =         81
+                                                F(5, 75)          =      63.84
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.8237
+                                                Root MSE          =     .00755
+
+---------------------------------------------------------------------------------
+                |               Robust
+    lgdp_change | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+----------------+----------------------------------------------------------------
+lcapital_change |   .5769935   .0864918     6.67   0.000      .404693     .749294
+  llabor_change |   .6929776   .1430388     4.84   0.000     .4080297    .9779255
+colonial_origin |   .0148753   .0071347     2.08   0.040     .0006623    .0290883
+       col_lcap |  -.0387399   .1254703    -0.31   0.758    -.2886896    .2112098
+     col_llabor |  -.4881059    .231264    -2.11   0.038    -.9488075   -.0274044
+          _cons |  -.0004095   .0022428    -0.18   0.856    -.0048775    .0040585
+---------------------------------------------------------------------------------
+
+. 
+. /* II.B.3.d Test the joint significance of colonial_origin and the generated 
+>         interaction variables in the regression */
+. 
+. test colonial_origin col_lcap col_llabor
+
+ ( 1)  colonial_origin = 0
+ ( 2)  col_lcap = 0
+ ( 3)  col_llabor = 0
+
+       F(  3,    75) =    1.96
+            Prob > F =    0.1280
+
+. 
+.    
+. log close
+      name:  <unnamed>
+       log:  C:\Users\abize\OneDrive\Desktop\Econometrics\Empirical_Project\Empirical_Project_Solow_Output.log
+  log type:  text
+ closed on:   5 Dec 2023, 13:02:56
+--------------------------------------------------------------------------------------------------------------------------------------------------------------

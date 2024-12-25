@@ -1,0 +1,226 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\abize\OneDrive\Desktop\Econometrics\Empirical_Project\Empirical_Project_Treatment_Output.log
+  log type:  text
+ opened on:   5 Dec 2023, 13:03:06
+
+. 
+. clear all               /* Clear memory */
+
+. set more off            /* Uninterrupted Scrolling for Results */
+
+. 
+. * Import Consolidated Growth and Country Data
+. *   Command:  use {filename}
+. use "GrowthData.dta", clear
+
+. 
+. /* III.A.3 Estimate a simple regression of gdp change on [treatment] 
+>         with Robust standard errors:  
+>      lgdp_change = b0 + b1*[treatment] + u 
+>    Command:  regress {y} {x1} {x2} ... {xk}, robust */
+. regress lgdp_change internet_usage, robust
+
+Linear regression                               Number of obs     =         81
+                                                F(1, 79)          =      26.61
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2020
+                                                Root MSE          =     .01565
+
+--------------------------------------------------------------------------------
+               |               Robust
+   lgdp_change | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+internet_usage |  -.0002539   .0000492    -5.16   0.000    -.0003518   -.0001559
+         _cons |   .0403228     .00309    13.05   0.000     .0341724    .0464732
+--------------------------------------------------------------------------------
+
+.    
+. /* III.A.5 Estimate a simple regression of capital change on [treatment] 
+>         with Robust standard errors:  
+>      lcapital_change = b0 + b1*[treatment] + u 
+>    Command:  regress {y} {x1} {x2} ... {xk}, robust */
+. reg lcapital_change internet_usage, robust
+
+Linear regression                               Number of obs     =         81
+                                                F(1, 79)          =       4.06
+                                                Prob > F          =     0.0473
+                                                R-squared         =     0.0465
+                                                Root MSE          =     .01753
+
+--------------------------------------------------------------------------------
+               |               Robust
+lcapital_cha~e | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+internet_usage |  -.0001248   .0000619    -2.01   0.047    -.0002481   -1.52e-06
+         _cons |   .0376091    .003946     9.53   0.000     .0297548    .0454635
+--------------------------------------------------------------------------------
+
+.    
+. /* III.A.7 Estimate a simple regression of labor force supply change on 
+>         [treatment] with Robust standard errors:  
+>      llabor_change = b0 + b1*[treatment] + u 
+>    Command:  regress {y} {x1} {x2} ... {xk}, robust */
+. regress llabor_change internet_usage, robust
+
+Linear regression                               Number of obs     =         81
+                                                F(1, 79)          =      89.86
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3980
+                                                Root MSE          =     .01078
+
+--------------------------------------------------------------------------------
+               |               Robust
+ llabor_change | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+internet_usage |  -.0002826   .0000298    -9.48   0.000    -.0003419   -.0002232
+         _cons |    .028389   .0017216    16.49   0.000     .0249623    .0318158
+--------------------------------------------------------------------------------
+
+.    
+. /* III.B.1 Install outreg2 package*/
+. ssc install outreg2
+checking outreg2 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. /* III.B.1.a Re-estimate a simple regression of gdp change on [treatment] 
+>         with Robust standard errors:  
+>      lgdp_change = b0 + b1*[treatment] + u 
+>    Command:  regress {y} {x1} {x2} ... {xk}, robust */
+. regress lgdp_change internet_usage, robust
+
+Linear regression                               Number of obs     =         81
+                                                F(1, 79)          =      26.61
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2020
+                                                Root MSE          =     .01565
+
+--------------------------------------------------------------------------------
+               |               Robust
+   lgdp_change | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+---------------+----------------------------------------------------------------
+internet_usage |  -.0002539   .0000492    -5.16   0.000    -.0003518   -.0001559
+         _cons |   .0403228     .00309    13.05   0.000     .0341724    .0464732
+--------------------------------------------------------------------------------
+
+.    
+.    
+. /* III.B.1.b Use outreg2 to store the regression outputs in a Word doc
+>    Command:  outreg2 using "TreatmentRegs.doc", replace ///
+>                                         ctitle(Simple Model) label */
+. outreg2 using "TreatmentRegs.doc", replace ///
+>                                         ctitle(Simple Model) label
+TreatmentRegs.doc
+dir : seeout
+
+.                                         
+. /* III.B.2.a Estimate the Solow Regression for gdp change adding [treatment] 
+>         with lcapital_change and llabor_change, with Robust standard errors:  
+>      lgdp_change = b0 + b1*[treatment] + b2*lcapital_change 
+>                                                 + b3*llabor_change + u  */
+. reg lgdp_change internet_usage lcapital_change llabor_change, robust
+
+Linear regression                               Number of obs     =         81
+                                                F(3, 77)          =     114.51
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.8046
+                                                Root MSE          =     .00784
+
+---------------------------------------------------------------------------------
+                |               Robust
+    lgdp_change | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+----------------+----------------------------------------------------------------
+ internet_usage |  -.0000116   .0000414    -0.28   0.779     -.000094    .0000707
+lcapital_change |   .5701359   .0636016     8.96   0.000      .443489    .6967829
+  llabor_change |    .605397   .1090988     5.55   0.000     .3881535    .8226406
+          _cons |   .0016939   .0036798     0.46   0.647    -.0056335    .0090212
+---------------------------------------------------------------------------------
+
+.       
+. /* III.B.2.b Use outreg2 to append the regression outputs to the Word doc
+>    Command:  outreg2 using "TreatmentRegs.doc", append ///
+>                                         ctitle(Solow Model) label */
+. outreg2 using "TreatmentRegs.doc", append ///
+>                                         ctitle(Solow Model) label
+TreatmentRegs.doc
+dir : seeout
+
+.                                         
+. /* III.B.3.a Estimate a multiple regression of gdp change on [treatment], 
+>         including only the control variables from :  
+>      lgdp_change = b0 + b1*[treatment] + b2*[control1] + ...
+>                                                 + b6*[control5] + u */
+. regress lgdp_change internet_usage corruption_control rule_of_law rural_popn_pct telephone_subs elect_access_rural, robust
+
+Linear regression                               Number of obs     =         81
+                                                F(6, 74)          =       8.64
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.3555
+                                                Root MSE          =     .01453
+
+------------------------------------------------------------------------------------
+                   |               Robust
+       lgdp_change | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+    internet_usage |  -.0001258   .0001965    -0.64   0.524    -.0005173    .0002657
+corruption_control |  -.0086665   .0089589    -0.97   0.337    -.0265175    .0091845
+       rule_of_law |   .0146064   .0090923     1.61   0.112    -.0035103    .0327232
+    rural_popn_pct |   .0000539   .0001449     0.37   0.711    -.0002348    .0003427
+    telephone_subs |  -.0000832   .0002069    -0.40   0.689    -.0004955    .0003292
+elect_access_rural |  -.0001983   .0000925    -2.14   0.035    -.0003826    -.000014
+             _cons |   .0468851   .0122281     3.83   0.000     .0225202    .0712501
+------------------------------------------------------------------------------------
+
+. /* III.B.3.b Use outreg2 to append the regression outputs to the Word doc
+>    Command:  outreg2 using "TreatmentRegs.doc", append ///
+>                                         ctitle(Controlled Model) label */
+. outreg2 using "TreatmentRegs.doc", append ///
+>                                         ctitle(Controlled Model) label
+TreatmentRegs.doc
+dir : seeout
+
+.                 
+. /* III.B.4.a Estimate a multiple regression of gdp change on [treatment], 
+>         including only the control variables from :  
+>      lgdp_change = b0 ++ b1*[treatment] + b2*lcapital_change 
+>                                                 + b3*llabor_change + b4*[control1] + ...
+>                                                 + b8*[control5] + u */
+. regress lgdp_change internet_usage lcapital_change llabor_change corruption_control rule_of_law rural_popn_pct telephone_subs elect_access_rural, robust
+
+Linear regression                               Number of obs     =         81
+                                                F(8, 72)          =      43.30
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.8230
+                                                Root MSE          =     .00772
+
+------------------------------------------------------------------------------------
+                   |               Robust
+       lgdp_change | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+    internet_usage |   .0000699   .0001017     0.69   0.494    -.0001328    .0002726
+   lcapital_change |   .5413476   .0638824     8.47   0.000     .4140004    .6686948
+     llabor_change |   .5766136   .1107927     5.20   0.000     .3557525    .7974748
+corruption_control |  -.0046486   .0051904    -0.90   0.373    -.0149954    .0056983
+       rule_of_law |   .0062249   .0061708     1.01   0.316    -.0060764    .0185262
+    rural_popn_pct |   .0001009   .0000714     1.41   0.162    -.0000415    .0002434
+    telephone_subs |  -.0000463   .0000767    -0.60   0.548    -.0001993    .0001067
+elect_access_rural |    -.00004   .0000499    -0.80   0.426    -.0001395    .0000595
+             _cons |  -.0012187    .008188    -0.15   0.882    -.0175411    .0151037
+------------------------------------------------------------------------------------
+
+. /* III.B.4.b Use outreg2 to append the regression outputs to the Word doc
+>    Command:  outreg2 using "TreatmentRegs.doc", append ///
+>                                         ctitle(Solow with Controls) label */
+. outreg2 using "TreatmentRegs.doc", append ///
+>                                         ctitle(Solow with Controls) label
+TreatmentRegs.doc
+dir : seeout
+
+.  
+. log close
+      name:  <unnamed>
+       log:  C:\Users\abize\OneDrive\Desktop\Econometrics\Empirical_Project\Empirical_Project_Treatment_Output.log
+  log type:  text
+ closed on:   5 Dec 2023, 13:03:11
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
